@@ -5,6 +5,6 @@ Displays a very basic black cavas in your browser with randomly appearing and di
 
 The number of "registers" and "bits" are easily configurable in the javascript.
 
-See License.txt on the license.
+See LICENSE file on the license.
 
 So Relaxen und Watchen das Blinkenlight.
