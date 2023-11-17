@@ -20,7 +20,7 @@ height = (canvas.height = window.innerHeight);
 reset();
 window.addEventListener('resize', reset);
 canvas.addEventListener('click', reset, false);
-
+maxIntRep=2 ** numberOfBits;
 function reset(){
 	clearInterval(scheduler);
 	clearInterval(timer);
@@ -111,16 +111,31 @@ function selfTestPhase3(){
 }
 
 function operate(){
+	i=0;
 	timer = setInterval(() => {
-		r=rand(0,numberOfRegisters);
+		r=rand(0,numberOfRegisters-2);
 		b=rand(0,numberOfBits);
 		if (rand(1,99)%2==0) turnOn(r, b);
 		else turnOff(r,b);
+		if (++i > maxIntRep) i=0;
+		
+		setRegister(numberOfRegisters-1, i);		
 	}, 20);
 }
 
-function arithmetic(){
+function setRegister(register, integerValue){
+	if (integerValue>maxIntRep) return;
 
+	bits=(integerValue >>> 0).toString(2);
+	for (b = 0; b <bits.length; b++) {
+		currentbit=numberOfBits-bits.length+b;
+		if (bits[b]=='0') turnOff(register, currentbit);
+		else turnOn(register, currentbit);
+	}
+	for (b = 0; b < numberOfBits-bits.length; b++){
+		currentbit=b;
+		turnOff(register, b);
+	}
 }
 
 function degToRad(degrees) {
@@ -167,7 +182,7 @@ function turnAll(fillStyle)
 
 function turn(register, bit, fillStyle)
 {
-	if (register >= numberOfRegisters || bit >= numberOfBits) return;
+	if (register >= numberOfRegisters || register < 0 || bit >= numberOfBits || bit < 0) return;
 	
 	ctx.fillStyle = fillStyle;
 	loc = getLocation(register, bit);
