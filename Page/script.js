@@ -14,6 +14,11 @@ selftestPhase2Finished=false;
 selftestPhase3Started=false;
 selftestPhase3Finished=false;
 useAinimation=false;
+simulation="realistic";
+//simulation="calm";
+showInstructionPointer=true;
+cycleTime=100;
+
 width = (canvas.width = window.innerWidth);
 height = (canvas.height = window.innerHeight);
 
@@ -113,14 +118,32 @@ function selfTestPhase3(){
 function operate(){
 	i=0;
 	timer = setInterval(() => {
-		r=rand(0,numberOfRegisters-2);
-		b=rand(0,numberOfBits);
-		if (rand(1,99)%2==0) turnOn(r, b);
-		else turnOff(r,b);
-		if (++i > maxIntRep) i=0;
+		if (simulation=="realistic") realisticSimulation();
+		else calmSimulation();
 		
-		setRegister(numberOfRegisters-1, i);		
-	}, 20);
+		if(showInstructionPointer){
+			if (++i > maxIntRep) i=0;
+		
+			setRegister(numberOfRegisters-1, i);
+		}		
+	}, cycleTime);
+}
+
+function realisticSimulation()
+{
+	maxreg=showInstructionPointer?numberOfRegisters-1:numberOfRegisters;
+	for (r=0;r<maxreg;r++){
+		v=rand(0,maxIntRep);
+		setRegister(r,v);
+	}
+}
+
+function calmSimulation(){
+	maxreg=showInstructionPointer?numberOfRegisters-2:numberOfRegisters-1;
+	r=rand(0,maxreg);
+	b=rand(0,numberOfBits);
+	if (rand(1,99)%2==0) turnOn(r, b);
+	else turnOff(r,b);
 }
 
 function setRegister(register, integerValue){
