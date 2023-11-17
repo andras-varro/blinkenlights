@@ -13,6 +13,7 @@ selftestPhase2Started=false;
 selftestPhase2Finished=false;
 selftestPhase3Started=false;
 selftestPhase3Finished=false;
+useAinimation=false;
 width = (canvas.width = window.innerWidth);
 height = (canvas.height = window.innerHeight);
 
@@ -134,11 +135,13 @@ function degToRad(degrees) {
   const offColor2=onColor2;
   const offColor1=onColor1;
 function turnOn(register, bit) {
-	turnWithAnimation(register, bit, onColor1,onColor2,onColor3,onColorFull);
+	if (useAinimation) turnWithAnimation(register, bit, onColor1,onColor2,onColor3,onColorFull);
+	else turn(register, bit, onColorFull);
 }
 
 function turnOff(register, bit) {
-	turnWithAnimation(register, bit, offColor3,offColor2,offColor1,offColorFull);
+	if (useAinimation) turnWithAnimation(register, bit, offColor3,offColor2,offColor1,offColorFull);
+	else turn(register, bit, offColorFull);
 }
 
 function turnOnAll() {
