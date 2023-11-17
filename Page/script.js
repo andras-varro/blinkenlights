@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 const canvasColor="rgb(0, 0, 0)"
 ctx.fillStyle = canvasColor;
 ctx.fillRect(0, 0, width, height);
-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
+
 function degToRad(degrees) {
   return (degrees * Math.PI) / 180;
 }
