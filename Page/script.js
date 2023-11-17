@@ -112,11 +112,15 @@ function selfTestPhase3(){
 
 function operate(){
 	timer = setInterval(() => {
-		r=rand(0,15);
-		b=rand(0,15);
+		r=rand(0,numberOfRegisters);
+		b=rand(0,numberOfBits);
 		if (rand(1,99)%2==0) turnOn(r, b);
 		else turnOff(r,b);
 	}, 20);
+}
+
+function arithmetic(){
+
 }
 
 function degToRad(degrees) {
