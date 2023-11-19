@@ -1,9 +1,10 @@
-const numberOfBits=16;
-const numberOfRegisters=8;
+numberOfBits=16;
+numberOfRegisters=8;
 const onColorFull="rgb(255, 0, 0)";
 const offColorFull="rgb(0, 0, 0)";
 const canvas = document.querySelector(".myCanvas");
 const canvasColor="rgb(0, 0, 0)"
+//const fs=require('fs');
 ctx = canvas.getContext("2d");	
 timeoutHandle=null;
 timer=null;
@@ -16,16 +17,26 @@ selftestPhase3Finished=false;
 useAinimation=false;
 simulation="realistic";
 //simulation="calm";
+//simulation="execute";
 showInstructionPointer=true;
 cycleTime=100;
 
-width = (canvas.width = window.innerWidth);
-height = (canvas.height = window.innerHeight);
+width = null;
+height = null;
 
 reset();
 window.addEventListener('resize', reset);
 canvas.addEventListener('click', reset, false);
 maxIntRep=2 ** numberOfBits;
+programText=null;
+ip=0;
+ax=0;
+bx=0;
+cx=0;
+dx=0;
+ex=0;
+fx=0;
+gx=0;
 function reset(){
 	clearInterval(scheduler);
 	clearInterval(timer);
@@ -36,6 +47,33 @@ function reset(){
 	selftestPhase2Finished=false;
 	selftestPhase3Started=false;
 	selftestPhase3Finished=false;
+	reader=null;
+	if (simulation="execute"){
+		return;
+	}
+
+	continueStartup();
+}
+
+function continueStartup(){
+	document.getElementById('fileLoad').style.visibility = 'hidden';
+	document.getElementById('fileLoad').style.width = 0;
+	document.getElementById('fileLoad').style.height = 0;
+	if (simulation="execute"){
+		const [file] = document.querySelector("input[type=file]").files;
+		const reader = new FileReader();
+		reader.addEventListener("load", () => {
+				programText = reader.result.split('\n');
+			},false);
+		if (file) {
+			reader.readAsText(file);
+		}
+
+		numberOfBits=16;
+		numberOfRegisters=8;
+		showInstructionPointer=true;
+	}
+	
 	width = (canvas.width = window.innerWidth);
 	height = (canvas.height = window.innerHeight);
 	ctx.fillStyle = canvasColor;
@@ -92,7 +130,7 @@ function selfTestPhase2(){
 			}
 	
 		}, 20);
-	},80);
+	},40);
 }
 
 function selfTestPhase3(){
@@ -116,16 +154,26 @@ function selfTestPhase3(){
 }
 
 function operate(){
-	i=0;
 	timer = setInterval(() => {
-		if (simulation=="realistic") realisticSimulation();
-		else calmSimulation();
+		switch(simulation) {
+			case "realistic":
+				realisticSimulation();
+			  	break;
+			case "calm":
+				calmSimulation();
+				break;
+			case "execute":
+				executeProgram();
+				break;
+			default:
+				// todo
+		}
 		
 		if(showInstructionPointer){
-			if (++i > maxIntRep) i=0;
+			if (++ip > maxIntRep) ip=0;
 		
-			setRegister(numberOfRegisters-1, i);
-		}		
+			setRegister(numberOfRegisters-1, ip);
+		}
 	}, cycleTime);
 }
 
@@ -144,6 +192,76 @@ function calmSimulation(){
 	b=rand(0,numberOfBits);
 	if (rand(1,99)%2==0) turnOn(r, b);
 	else turnOff(r,b);
+}
+
+function executeProgram(){
+	length=programText.length;
+	if (ip<length) current=programText[ip].split(' ');
+	else {
+		current=null;
+		ip=0;
+	}
+
+	switch (current[0]){
+		case 'L':
+			load(current)
+			break;
+	}
+
+	flashRegisters();
+}
+
+// functions for each supported instruction
+function add(){}
+
+function load(line){
+	setRegisterByName(line);
+}
+
+function setRegisterByName(line){
+	if (line.length==2)
+	{
+		ax = line[1];
+	}
+	
+	if(line.length==3)
+	{
+		switch(line[1].toUpperCase()){
+			case "AX":
+				ax = line[2];
+				break;
+			case "BX":
+				bx=line[2];
+				break;
+			case "CX":
+				cx=line[2];
+				break;
+			case "DX":
+				dx=line[2];
+				break;
+			case "EX":
+				ex=line[2];
+				break;
+			case "FX":
+				fx=line[2];
+				break;
+			case "GX":
+				gx=line[2];
+				break;
+
+		}
+	}
+}
+
+function flashRegisters()
+{
+	setRegister(0,ax);
+	setRegister(1,bx);
+	setRegister(2,cx);
+	setRegister(3,dx);
+	setRegister(4,ex);
+	setRegister(5,fx);
+	setRegister(6,gx);
 }
 
 function setRegister(register, integerValue){
